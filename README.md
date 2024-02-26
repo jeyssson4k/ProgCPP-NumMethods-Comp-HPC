@@ -4,4 +4,7 @@ Actividades realizadas para los cursos:
 * Programación e introducción a los métodos numéricos
 
 ## Tareas y ejercicios programados.
-## Universidad Nacional de Colombia.
+
+
+
+-- Universidad Nacional de Colombia.
