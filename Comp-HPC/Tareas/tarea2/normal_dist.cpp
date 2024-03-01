@@ -51,6 +51,7 @@ void compute_pdf(int seed, int nsamples, double mu, double sigma, double xmin, d
     double zeroCenter = 0.5 * binWidth, centerStep = i * binWidth; //variables for mid value
     double binCenter = xmin + zeroCenter + centerStep; //calculates mid value for each bin
     double pdf = static_cast<double>(histogram[i]) / (nsamples * binWidth); //frecuency of intervals
+
     std::printf("%.5f %.5f\n", binCenter, pdf); //output 
   }
 }
