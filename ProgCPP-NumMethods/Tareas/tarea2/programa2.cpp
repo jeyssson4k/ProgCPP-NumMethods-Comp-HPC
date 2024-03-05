@@ -30,6 +30,7 @@ long get_primes(long k){
     }
     return k;
 }
+
 bool is_prime(long n){
     for(long b = 2; b <= std::sqrt(n); b++){
         if(n%b == 0){

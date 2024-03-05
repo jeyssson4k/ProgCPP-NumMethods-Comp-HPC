@@ -6,4 +6,4 @@ a.out : programa2.cpp
 	./a.out 210
 	./a.out 29398
 	./a.out 29400
-	./a.out 600851475243
+	./a.out 600851475143
