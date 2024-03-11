@@ -14,6 +14,7 @@ bool is_prime(long n);
 int main(int argc, char **argv){long x = std::atol(argv[1]);
     long best_prime = get_primes(x);
     std::cout<<best_prime<<"\n\n";
+
     return 0;
 }
 long get_primes(long k){

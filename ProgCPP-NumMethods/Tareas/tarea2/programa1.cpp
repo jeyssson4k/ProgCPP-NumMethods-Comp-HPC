@@ -14,10 +14,14 @@ bool is_prime(int n);
 long long sum_primes(std::vector<int> primes);
 
 int main(int argc, char **argv){
-    int x = std::atoi(argv[1]);
-    std::vector<int> primes_less_than_x = get_primes(x);
-    long long sum = sum_primes(primes_less_than_x);
-    std::cout<<sum<<"\n";
+    //int x = std::atoi(argv[1]);
+    std::vector<int> n {3,10,98,102,1234,49876,749320};
+    for(const int x : n){
+        std::vector<int> primes_less_than_x = get_primes(x);
+        long long sum = sum_primes(primes_less_than_x);
+         std::cout<<sum<<"\n";
+    }
+    
     return 0;
 }
 

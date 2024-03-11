@@ -30,7 +30,7 @@ int get_fibonacci(int k){
        
         a++;
         fibonacci.push_back(fib_term);
-        if(sum+fib_term <= k){
+        if(fib_term <= k){
             if(fib_term%2 == 0){
                 continue;
             }
