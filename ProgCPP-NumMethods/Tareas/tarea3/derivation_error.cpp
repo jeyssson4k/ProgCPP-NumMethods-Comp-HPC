@@ -14,7 +14,7 @@ int main(void){
     //sets the specific value for x to be used
     const double x = 4.321;
     //puts into a vector all values of "h" to be used
-    const std::vector<double> h {1e-1, 5e-2, 1e-2, 5e-3, 1e-3, 5e-4, 1e-4, 5e-5, 1e-5, 5e-6, 1e-6, 5e-7, 1e-7, 5e-8, 1e-8, 5e-9, 1e-9, 5e-10, 1e-10, 5e-11, 1e-11};
+    const std::vector<double> h {1e-1, 1e-2, 1e-3, 1e-4, 1e-5, 1e-6, 1e-7, 1e-8, 1e-9, 1e-10};
     //creates an instance of fstream to write in a file
     const std::string output_data_file_name = "data.txt";
     std::ofstream outputFile(output_data_file_name);
@@ -48,8 +48,17 @@ double df_dx(double x){
 }
 //numerical derivate of function f
 double deriv_forward(double x, double h, bool is_central){
-    return (is_central) ? ((f(x+(h/2.0))-f(x-(h/2.0)))/h) : ((f(x+h)-f(x))/h);
+    if(is_central){
+        return (f(x+(h/2.0))-f(x-(h/2.0)))/h; 
+    }else{
+        return (f(x+h)-f(x))/h;
+    }
 }
 double df_error(double dy_theo, double dy_num){
     return std::fabs(dy_theo-dy_num)/std::fabs(dy_theo);
 }
+/*
+double deriv_forward(double x, double h, bool is_central){
+    return (is_central) ? ((f(x+(h/2.0))-f(x-(h/2.0)))/h) : ((f(x+h)-f(x))/h);
+}
+*/
