@@ -16,7 +16,7 @@ plt.yscale("log")
 # Añadir etiquetas y título
 plt.xlabel('h')
 plt.ylabel('Error porcentual')
-plt.title('Error porcentual para las derivadas numéricas de la función 4xsin(x)')
+plt.title('Error porcentual para derivadas numéricas de la función 4xsin(x)+7')
 
 # Mostrar leyenda y gráfico
 plt.legend()
