@@ -1,7 +1,6 @@
 #pragma once
 #include <cmath>
 #include <vector>
-#include <cstdio>
 
 using fptr = double(double);
 using dfptr = double(fptr, double, double, std::vector<double>, std::vector<double>);

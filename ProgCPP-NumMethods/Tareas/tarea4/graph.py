@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Leer los datos del archivo .txt
-with open('data.txt', 'r') as file:
+with open('derivates.txt', 'r') as file:
     lines = file.readlines()
 
 h     = [float(line.split()[0])  for line in lines]
