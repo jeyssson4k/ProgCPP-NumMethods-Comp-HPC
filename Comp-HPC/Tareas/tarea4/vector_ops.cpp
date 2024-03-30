@@ -6,3 +6,6 @@ double mean(const std::vector<double> & data){
   }
   return sum/(data.size()+0.0);
 }
+double re_error(double real, double computed){
+    return std::fabs(real-computed)/std::fabs(real);
+}
