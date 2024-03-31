@@ -35,3 +35,17 @@ int main(int argc, char **argv){
     linreg::export_JSON_linreg_info("info.json", g_info, "|", v);
     return EXIT_SUCCESS;
 }
+
+
+/*
+Biblografía
+https://en.cppreference.com/w/cpp/io/basic_ifstream
+https://en.cppreference.com/w/cpp/container/vector
+https://en.cppreference.com/w/cpp/utility/variadic
+https://en.cppreference.com/w/cpp/types/numeric_limits
+https://cplusplus.com/reference/string/string/
+https://cplusplus.com/reference/string/string/substr/
+https://cplusplus.com/reference/string/string/erase/
+https://cplusplus.com/reference/string/string/find/
+https://en.cppreference.com/w/cpp/utility/tuple
+*/

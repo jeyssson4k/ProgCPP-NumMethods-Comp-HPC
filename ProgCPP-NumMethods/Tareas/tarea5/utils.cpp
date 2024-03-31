@@ -21,6 +21,12 @@ std::vector<std::vector<double>> linreg::fetch(const std::string &path){
     }
     data.push_back(u); data.push_back(v);
     data_file.close();
+    std::cerr << 
+        "--------------------------------------------------------------------------------\n" << 
+        "File fetched successfully [in fetch]: file converted to x,y vectors!" <<
+        "\n\t x: " << it << " elements." <<
+        "\n\t y: " << it << " elements.\n" <<
+        "--------------------------------------------------------------------------------\n";
     return data;
 }
 void linreg::show(const std::vector<double> summary){
@@ -290,7 +296,5 @@ void linreg::export_JSON_linreg_info(std::string path, std::string buffer, std::
             "Operation completed succesfully [in export JSON info]: " << splits + 1 <<
             " pairs (key,value) written in " << path << "\n" <<
             "--------------------------------------------------------------------------------\n";
-    }
-    
+    } 
 }
-
