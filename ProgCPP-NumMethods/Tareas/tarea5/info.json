@@ -1,0 +1,15 @@
+{
+	"slope" : 4.08822735851750183906e-15,
+	"intercept" : -1.73123580398135001879e+00,
+	"dslp" : 5.25403006776953113081e-17,
+	"dint" : 4.46546322796166697544e-02,
+	"k" : 6.55006234829628196614e-34,
+	"title" : "Tensión Eléctrica en función de la frecuencia de la luz incidente",
+	"xlabel" : "Frecuencia de la luz incidente",
+	"ylabel" : "Tensión Eléctrica",
+	"lrlabel" : "Regresión Lineal de V(v)",
+	"cvlabel" : "V(v)",
+	"lrcolor" : "#FF02B0",
+	"cvcolor" : "#000000"
+	
+}

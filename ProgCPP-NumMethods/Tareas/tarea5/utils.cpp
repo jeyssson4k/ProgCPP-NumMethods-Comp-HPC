@@ -154,10 +154,10 @@ std::tuple<double, double, double, double, double> linreg::linregress(const std:
 
     return std::make_tuple(slope, std::sqrt(delta_slope), intercept, std::sqrt(delta_intercept), std::sqrt(delta_intercept));
 }
-std::vector<double> linreg::expected_x(const std::vector<double> &x, int steps){
+std::vector<double> linreg::expected_x(const std::vector<double> &x){
     std::vector<double> u;
     if(x.size() < 1) return u;
-    u = linreg::linspace(linreg::vector_min(x), linreg::vector_max(x), steps);
+    u = linreg::linspace(linreg::vector_min(x), linreg::vector_max(x), x.size());
     return u;
 }
 std::vector<double> linreg::expected_y(const std::vector<double> &x, double slope, double intercept){
@@ -165,8 +165,132 @@ std::vector<double> linreg::expected_y(const std::vector<double> &x, double slop
     if(x.size() < 1) return v;
     double y_i = 0.;
     for(const double x_i : x){
-        y_i = intercept + (slope*x_i);
+        y_i = (slope*x_i) + intercept;
         v.push_back(y_i);
     }
     return v;
 }
+void linreg::export_linreg_values(std::string path, const std::vector<double> &x, double slope, double intercept){
+    if(x.size() < 1){
+        std::cerr << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Argument Error [in export linear regression]: error processing data to export the linear regression." <<
+            "\n\t Vector x is empty!." <<
+            "\n\t Try to use a valid input. \n" <<
+            "--------------------------------------------------------------------------------\n";
+    }else if(path.empty()){
+        std::cerr << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Argument Error [in export linear regression]: error processing data to export the linear regression." <<
+            "\n\t Path is empty!." <<
+            "\n\t Try to use a valid input. \n" <<
+            "--------------------------------------------------------------------------------\n";
+    }else{
+        std::ofstream outputFile(path);
+        outputFile << std::setprecision(20) << std::scientific;
+        std::vector<double> lr_x = linreg::expected_x(x);
+        std::vector<double> lr_y = linreg::expected_y(lr_x, slope, intercept);
+
+        for(int i = 0; i < x.size(); ++i){
+            outputFile << lr_x[i] << "\t" << lr_y[i] << "\n";
+        }
+
+        outputFile.close();
+        std::cout << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Operation completed succesfully [in export linear regression]: Data written in " << path <<
+            "\n\t Column 0: expected values of x." <<
+            "\n\t Column 1: expected values of f(x) = mx+b.\n" <<
+            "--------------------------------------------------------------------------------\n";
+    }
+        
+}
+
+void linreg::export_JSON_linreg_info(std::string path, std::string buffer, std::string delimiter, std::vector<double> stats){
+    if(path.empty() or buffer.empty()){
+        std::cerr << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Argument Error [in export JSON info]: error processing data to export the linear regression." <<
+            "\n\t Path is empty or no info to be processed!." <<
+            "\n\t Try to use a valid input. \n" <<
+            "--------------------------------------------------------------------------------\n";
+    }else if(stats.size() < 4 or stats.size() > 5){
+        std::cerr << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Argument Error [in export JSON info]: error processing data to export the linear regression." <<
+            "\n\t Some values are missing! (or too much parameters)." <<
+            "\n\t Try to use a valid input. Verify if your vector has (at least):\n" <<
+            "\n\t\t slope, intercept, delta_slope, delta_slope, delta_intercept (in this order) and try again.\n" <<
+            "--------------------------------------------------------------------------------\n";
+    }else{
+        std::vector<std::string> v{"slope", "intercept", "dslp", "dint", "k"};
+        std::ofstream outputFile(path);
+        outputFile << std::setprecision(20) << std::scientific;
+        outputFile << "{\n\t";
+        for(int i = 0; i < stats.size(); ++i){
+            outputFile << "\"" << v[i] << "\" : " << stats[i] << ",\n\t";
+        }
+        int splits = 0;
+        std::size_t f = buffer.find(delimiter), g = buffer.find(",");
+        while(f != std::string::npos or g != std::string::npos){
+            std::size_t found = buffer.find(delimiter);
+            if(found!=std::string::npos){
+                std::string str = buffer.substr(0,found);
+                buffer.erase(0,found+1); 
+                std::size_t fnd = str.find(",");
+                if(fnd!=std::string::npos){
+                    std::string s1 = str.substr(0,fnd);
+                    str.erase(0,fnd+1); 
+                    std::string s2 = str;
+                    str.erase(0, str.length());
+                    std::cout << "\n\t" << "\"" << s1 << "\" : " << s2;
+                    outputFile << "\"" << s1 << "\" : \"" << s2 << "\",\n\t";
+                    splits++;
+                    f = buffer.find(delimiter); g = buffer.find(",");
+                    continue;
+                }else{
+                    std::cerr << 
+                        "--------------------------------------------------------------------------------\n" << 
+                        "Argument Error [in export JSON info]: error processing data to export the linear regression." <<
+                        "\n\t Expected separator , in (key,value) #" << splits << "."
+                        "\n\t Try to use a valid input. JSON will be unfinished at " << path << "\n" <<
+                        "--------------------------------------------------------------------------------\n";
+                    break;
+                }
+            }else{
+                std::size_t fnd = buffer.find(",");
+                if(fnd!=std::string::npos){
+                    std::string s1 = buffer.substr(0,fnd);
+                    buffer.erase(0,fnd+1); 
+                    std::string s2 = buffer;
+                    buffer.erase(0, buffer.length());
+                    std::cout << "\n\t" << "\"" << s1 << "\" : " << s2 << "\n\n";
+                    outputFile << "\"" << s1 << "\" : \"" << s2 << "\"\n\t";
+                    f = buffer.find(delimiter); g = buffer.find(",");
+                    splits++;
+                    continue;
+                }else{
+                    std::cerr << 
+                        "--------------------------------------------------------------------------------\n" << 
+                        "Argument Error [in export JSON info]: error processing data to export the linear regression." <<
+                        "\n\t Expected separator , in (key,value) #" << splits << "."
+                        "\n\t Try to use a valid input. JSON will be unfinished at " << path << "\n" <<
+                        "--------------------------------------------------------------------------------\n";
+                    break;
+                }
+            }
+            
+        }
+
+        outputFile << "\n}";
+        outputFile.close();
+
+        std::cout << 
+            "--------------------------------------------------------------------------------\n" << 
+            "Operation completed succesfully [in export JSON info]: " << splits + 1 <<
+            " pairs (key,value) written in " << path << "\n" <<
+            "--------------------------------------------------------------------------------\n";
+    }
+    
+}
+

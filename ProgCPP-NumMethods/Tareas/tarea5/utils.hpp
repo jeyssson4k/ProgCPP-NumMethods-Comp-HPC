@@ -49,7 +49,9 @@ namespace linreg{
     double vector_min(const std::vector<double> &v);
     std::vector<double> linspace(double a, double b, int steps);
     std::tuple<double, double, double, double, double> linregress(const std::vector<double>& x, const std::vector<double>& y, bool show_results);
-    std::vector<double> expected_x(const std::vector<double> &x, int steps);
+    std::vector<double> expected_x(const std::vector<double> &x);
     std::vector<double> expected_y(const std::vector<double> &x, double slope, double intercept);
+    void export_linreg_values(std::string path, const std::vector<double> &x, double slope, double intercept);
+    void export_JSON_linreg_info(std::string path, std::string buffer, std::string delimiter, std::vector<double> stats);
 }
 
