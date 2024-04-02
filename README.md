@@ -4,7 +4,13 @@ Actividades realizadas para los cursos:
 * Programación e introducción a los métodos numéricos
 
 ## Tareas y ejercicios programados.
-
+- Estimación del número PI
+- Diferencias numéricas
+- PDF de la distribución normal
+- Problemas de Project Euler
+- Derivación numérica
+- Estimación de derivadas numéricas con distintos errores
+- Regresión lineal
 
 
 -- Universidad Nacional de Colombia.
