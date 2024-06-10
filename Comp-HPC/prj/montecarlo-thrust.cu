@@ -1,8 +1,6 @@
 #include <thrust/host_vector.h>
 #include <thrust/device_vector.h>
 #include <thrust/generate.h>
-#include <thrust/async/copy.h>
-#include <thrust/async/reduce.h>
 #include <thrust/functional.h>
 #include <thrust/random.h>
 #include <numeric>
