@@ -2,48 +2,29 @@
 #include <stdlib.h>
 #include <cuda_runtime.h>
 #include <curand.h>
+#include <thrust/device_vector.h>
+#include <thrust/reduce.h>
 
-template <unsigned int blockSize>
-__device__ void warpReduce(volatile int *sdata, unsigned int tid) {
-    if (blockSize >= 64) sdata[tid] += sdata[tid + 32];
-    if (blockSize >= 32) sdata[tid] += sdata[tid + 16];
-    if (blockSize >= 16) sdata[tid] += sdata[tid + 8];
-    if (blockSize >= 8) sdata[tid] += sdata[tid + 4];
-    if (blockSize >= 4) sdata[tid] += sdata[tid + 2];
-    if (blockSize >= 2) sdata[tid] += sdata[tid + 1];
-}
+#define CUDA_CALL(x) do { \
+    cudaError_t err = (x); \
+    if (err != cudaSuccess) { \
+        printf("Error at %s:%d: %s\n", __FILE__, __LINE__, cudaGetErrorString(err)); \
+        return EXIT_FAILURE; \
+    } \
+} while (0)
 
-template <unsigned int blockSize> //unroll loop
-__global__ void cuda_integrate(float *data, double *resp, size_t size, double a, double b){
-    extern __shared__ int sdata[];
-    unsigned int tid = threadIdx.x;
-    unsigned int row = blockIdx.x*blockDim.x + threadIdx.x;
-    unsigned int col = blockIdx.y*blockDim.y + threadIdx.y;
+__global__ void cuda_integrate(float *data, float *resp, int size, float a, float b){
+    int row = blockIdx.x*blockDim.x + threadIdx.x;
+    int col = blockIdx.y*blockDim.y + threadIdx.y;
 
     if(col == 0 && row < size){
-        double sum = 0.0f;
+        float sum = 0.0f;
         for(int i = 0; i < size; ++i){
-            double x = (b-a)*data[row*size+i];
+            float x = (b-a)*data[row*size+i];
             sum += std::exp(-1.0*x*x);
         }
         resp[row] = sum;
-    }
-
-    unsigned int tid = threadIdx.x;
-    unsigned int i = blockIdx.x*(blockSize*2) + tid;
-    unsigned int gridSize = blockSize*2*gridDim.x;
-    sdata[tid] = 0;
-
-    while (i < n) { sdata[tid] += resp[i] + resp[i+blockSize]; i += gridSize; }
-    __syncthreads(); 
-
-    //512 is the limit 
-    if (blockSize >= 512) { if (tid < 256) { sdata[tid] += sdata[tid + 256]; } __syncthreads(); }
-    if (blockSize >= 256) { if (tid < 128) { sdata[tid] += sdata[tid + 128]; } __syncthreads(); }
-    if (blockSize >= 128) { if (tid < 64) { sdata[tid] += sdata[tid + 64]; } __syncthreads(); }
-    if (tid < 32) warpReduce(sdata, tid);
-    if (tid == 0) resp[blockIdx.x] = (b-a)*sdata[0]/size;
-    
+    } 
 }
 
 #define CUDA_CALL(x) do { if((x)!=cudaSuccess) { \
@@ -56,64 +37,68 @@ __global__ void cuda_integrate(float *data, double *resp, size_t size, double a,
 int main(int argc, char *argv[])
 {
     const int PARAMS = 5;
-    const bool USER_PARAMS = PARAMS+1 == argc;
-    if(!USER_PARAMS){
-        printf(
-            "ERROR: Insufficient number of parameters for performance.
-            \n\tExpected %d parameters.
-            \n\tGiven %d parameters.\n\n", 
+    if(!(PARAMS+1 == argc)){
+        printf("ERROR: Insufficient number of parameters for performance. \n\tExpected %d parameters. \n\tGiven %d parameters.\n\n", 
             PARAMS, argc-1);
         return EXIT_FAILURE;
     }
 
+    //line command inputs
     const size_t M = static_cast<size_t>(std::atoll(argv[1]));
     const size_t seed = static_cast<size_t>(std::atoll(argv[2]));
     const size_t th = static_cast<size_t>(std::atoll(argv[3]));
-    const double a = std::atof(argv[4]);
-    const double b = std::atof(argv[5]);
+    const float a = std::atof(argv[4]);
+    const float b = std::atof(argv[5]);
 
+    printf("Executing on GPU using %zu x %zu data\n\n", M, M);
+    //matrix size for random generator
     const size_t size = M*M;
-
-    float  *devData;
-    double *hostData, *devResp;
+    //device pointers to save data
+    float *devData, *devResp;
 
     //grid shape = general division n*m
     //block shape = division for each position in grid p*q threads
     dim3 block_shape = dim3(th,th);
-    dim3 grid_shape = dim3(
-        max(1.0, ceil((float) M / (float)block_shape.x)),
-        max(1.0, ceil((float) M / (float)block_shape.y))
-    );
+    printf("Block Shape: %zu x %zu\n", th, th);
 
-    /* Allocate doubles on host */
-    hostData = (double *)calloc(M, sizeof(double));
+    /*
+    float gshx = max(1.0, ceil((float) M/(float)block_shape.x));
+    float gshy = max(1.0, ceil((float) M/(float)block_shape.y));
+    dim3 grid_shape = dim3(gshx, gshy);
+
+    printf("Grid Shape: %.2f x %.2f\n", gshx, gshy);
+    */
     
-    /* Allocate doubles on device */
-    CUDA_CALL(cudaMalloc((void **)&devData, size*sizeof(float)));
-    CUDA_CALL(cudaMalloc((void **)&devResp, M*sizeof(double)));
+    dim3 grid_shape = dim3(1024, 1024);
+    printf("Block Shape: 1024 x 1024\n");
 
-    curandGenerator_t gen;
-        
+    /* Allocate floats on device */
+    CUDA_CALL(cudaMalloc((void **)&devData, size*sizeof(float)));
+    CUDA_CALL(cudaMalloc((void **)&devResp, M*sizeof(float)));
+
+    curandGenerator_t gen;  
     /* Create pseudo-random number generator */
     CURAND_CALL(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MTGP32));
     /* Set seed */
     CURAND_CALL(curandSetPseudoRandomGeneratorSeed(gen, seed));
-    /* Generate size doubles on device */
+    /* Generate n floats on device */
     CURAND_CALL(curandGenerateUniform(gen, devData, size));
 
-    /* Exec Montecarlo method */
-    cuda_integrate<<<grid_shape, block_shape>>>(devData, devResp, M, a, b);
+    //compute values of function e^(-x^2) with random inputs
+    cuda_integrate<<<grid_shape, block_shape>>>(devData, devResp, M, 0.0f,6.55f);
     cudaDeviceSynchronize();
 
-    /* Copy device memory to host */
-    CUDA_CALL(cudaMemcpy(hostData, devResp, M*sizeof(double),cudaMemcpyDeviceToHost));
-    printf("Result:\t%.6f\t", *hostData);
-    
+    //computing results
+    thrust::device_vector<float> dv{devResp, devResp + (M)};
+    float y = thrust::reduce(dv.begin(), dv.end(), 0.0, thrust::plus<float>());
+    float r = (b-a)*y/size;
+    printf("Result: %.10f\t", r);
+    double u = std::fabs(1 - (r/0.886227));
+    std::printf("Error: %.10f\n", u);
     /* Cleanup */
     CURAND_CALL(curandDestroyGenerator(gen));
     CUDA_CALL(cudaFree(devData));
     CUDA_CALL(cudaFree(devResp));
-    free(hostData);
 
     return EXIT_SUCCESS;
 }
