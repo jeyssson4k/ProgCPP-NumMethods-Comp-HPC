@@ -37,7 +37,7 @@ void rprintf(const char *fmt...)
 
     va_end(args);
 }
-void setThreads(S *s, int default)
+void setThreads(S *s, int threads_default)
 {
     s->threadsPerBlock = (s->threadsPerBlock % 32 != 0 && s->k == 0) ? threads_default : s->threadsPerBlock;
 }
