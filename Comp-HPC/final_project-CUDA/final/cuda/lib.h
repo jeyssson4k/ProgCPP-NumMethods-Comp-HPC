@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iomanip>
 #include <time.h>
+#include <chrono>
+#include <iostream>
 
 #define CUDA_CALL(x)                                                                     \
     do                                                                                   \
@@ -32,6 +34,7 @@
 #define SHARED_MEMORY 256 * BYTES
 #define DEFAULT_THREADS 256
 #define MAX_THREADS 1024
+#define MAX_DIM_THREADS 32
 
 struct S
 {
@@ -47,17 +50,6 @@ struct S
     S() : size(0), seed(0), blocksPerGrid(0), threadsPerBlock(0), a(0.0f), b(0.0f), u(0.0f), k(0) {}
 };
 
-struct D
-{
-    float *d_i;
-    float *d_o;
-    float *d_o2;
-};
-
-struct H
-{
-    float *h_o;
-};
 enum K
 {
     CUDA_REDUCTION,
@@ -66,7 +58,7 @@ enum K
 
 bool validate_params(const int PARAMS, const int argc);
 void rprintf(const char *fmt...);
-void setThreads(S *, int);
+void setThreads(S *);
 void computeBlocks(S *);
 void init(S *, char **, int);
 void restoreData(float *host, char *path);

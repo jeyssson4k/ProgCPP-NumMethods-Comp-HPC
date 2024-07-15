@@ -67,20 +67,28 @@ int main(int argc, char *argv[])
     CUDA_CALL(cudaMalloc((void **)&devResp, MEMORY_BYTES));
     host = (float *)malloc(MEMORY_BYTES);
 
+    auto t1 = std::chrono::high_resolution_clock::now();
     /* Create pseudo-random number generator */
     curandGenerator_t gen;
     CURAND_CALL(curandCreateGenerator(&gen, CURAND_RNG_PSEUDO_MTGP32));
     CURAND_CALL(curandSetPseudoRandomGeneratorSeed(gen, s0.seed)); // Set the seed
     /* Generate n floats on device */
     CURAND_CALL(curandGenerateUniform(gen, devData, SIZE));
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+    std::cout << "Time performing device_vector random numbers generation: " << ms_int.count() << "us\n";
 
+    t1 = std::chrono::high_resolution_clock::now();
     // Compute values of function e^(-x^2) with random numbers as input
     cuda_integrate<<<grid_shape, block_shape>>>(devData, devResp, s0);
     CUDA_CALL(cudaGetLastError());
     CUDA_CALL(cudaMemcpy(host, devResp, MEMORY_BYTES, cudaMemcpyDeviceToHost));
-
+    t2 = std::chrono::high_resolution_clock::now();
+    ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+    std::cout << "Time performing device_vector mapping and reduction: " << ms_int.count() << "us\n";
     // Write vector result in a file with CPU
-    clock_t tStart = clock();
+
+    t1 = std::chrono::high_resolution_clock::now();
     const char *data_file = argv[7];
     std::ofstream outputFile(data_file);
     outputFile << std::fixed << std::setprecision(20);
@@ -91,7 +99,9 @@ int main(int argc, char *argv[])
         outputFile << host[i] << "\n";
     }
     outputFile.close();
-    printf("Time taken: %.3fs\n", (double)(clock() - tStart) / CLOCKS_PER_SEC);
+    t2 = std::chrono::high_resolution_clock::now();
+    ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+    std::cout << "Time performing host writing file in disk: " << ms_int.count() << "us\n";
 
     /* Cleanup */
     CURAND_CALL(curandDestroyGenerator(gen));

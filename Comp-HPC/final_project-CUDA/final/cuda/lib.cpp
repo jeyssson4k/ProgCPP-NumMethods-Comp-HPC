@@ -37,9 +37,16 @@ void rprintf(const char *fmt...)
 
     va_end(args);
 }
-void setThreads(S *s, int threads_default)
+void setThreads(S *s)
 {
-    s->threadsPerBlock = (s->threadsPerBlock % 32 != 0 && s->k == 0) ? threads_default : s->threadsPerBlock;
+    if (s->k == 1)
+    {
+        s->threadsPerBlock = (s->threadsPerBlock > MAX_DIM_THREADS) ? MAX_DIM_THREADS : s->threadsPerBlock;
+    }
+    else if (s->k == 0)
+    {
+        s->threadsPerBlock = (s->threadsPerBlock % MAX_DIM_THREADS != 0) ? MAX_THREADS : s->threadsPerBlock;
+    }
 }
 
 void computeBlocks(S *s)
@@ -55,7 +62,7 @@ void init(S *s, char **argv, int k)
     s->b = std::atof(argv[5]);
     s->u = s->b - s->a;
     s->k = k;
-    setThreads(s, DEFAULT_THREADS);
+    setThreads(s);
     computeBlocks(s);
 }
 

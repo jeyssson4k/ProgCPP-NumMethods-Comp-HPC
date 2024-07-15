@@ -26,7 +26,7 @@ __global__ void sumReduction(float *v, float *v_r, bool isInitialLoading, S st)
   __syncthreads();
 
   // Increase the stride of the access until we exceed the CTA dimensions
-  for (int s = 1; s < blockDim.x; s *= 2)
+  for (int s = 1; s < blockDim.x; s <<= 1)
   {
     // Change the indexing to be sequential threads
     int index = 2 * s * threadIdx.x;
@@ -54,17 +54,17 @@ int main(int argc, char **argv)
     return EXIT_FAILURE;
   enum K k0 = CUDA_REDUCTION; // Define type of execution
   S s0{};
-  H h0{};
-  D d0{};
 
   /* Initialising memory */
   init(&s0, (char **)argv, k0);
+  float *dev0, *dev1, *host;
   const size_t MEMORY_BYTES = s0.size * BYTES;
   const size_t SHARED_MEM = s0.threadsPerBlock * BYTES;
   const float EXPECTED_VALUE = std::atof(argv[6]);
-  CUDA_CALL(cudaMalloc((void **)&d0.d_i, MEMORY_BYTES));
-  CUDA_CALL(cudaMalloc((void **)&d0.d_o, MEMORY_BYTES));
+  CUDA_CALL(cudaMalloc((void **)&dev0, MEMORY_BYTES));
+  CUDA_CALL(cudaMalloc((void **)&dev1, MEMORY_BYTES));
 
+  auto t1 = std::chrono::high_resolution_clock::now();
   /* Declare generator */
   curandGenerator_t gen;
   /* Create pseudo-random number generator */
@@ -72,24 +72,38 @@ int main(int argc, char **argv)
   /* Set seed */
   CURAND_CALL(curandSetPseudoRandomGeneratorSeed(gen, s0.seed));
   /* Generate n floats on device */
-  CURAND_CALL(curandGenerateUniform(gen, d0.d_i, s0.size));
+  CURAND_CALL(curandGenerateUniform(gen, dev0, s0.size));
+  CUDA_CALL(cudaGetLastError());
+  auto t2 = std::chrono::high_resolution_clock::now();
+  auto ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+  std::cout << "Time performing device_vector random numbers generation: " << ms_int.count() << "us\n";
+
   // Launch the kernel
-  sumReduction<<<s0.blocksPerGrid, s0.threadsPerBlock, SHARED_MEM>>>(d0.d_i, d0.d_o, true, s0);
-  sumReduction<<<1, s0.threadsPerBlock, SHARED_MEM>>>(d0.d_o, d0.d_o, false, s0);
+  t1 = std::chrono::high_resolution_clock::now();
+  sumReduction<<<s0.blocksPerGrid, s0.threadsPerBlock, SHARED_MEM>>>(dev0, dev1, true, s0);
+  sumReduction<<<1, s0.threadsPerBlock, SHARED_MEM>>>(dev1, dev1, false, s0);
   // CUDA_CALL(cudaGetLastError());
+  t2 = std::chrono::high_resolution_clock::now();
+  ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+  std::cout << "Time performing device_vector mapping and reduction: " << ms_int.count() << "us\n";
 
   // Copy result back to host and compute output
-  h0.h_o = (float *)malloc(MEMORY_BYTES);
-  CUDA_CALL(cudaMemcpy(h0.h_o, d0.d_o, MEMORY_BYTES, cudaMemcpyDeviceToHost));
+  t1 = std::chrono::high_resolution_clock::now();
+  host = (float *)malloc(MEMORY_BYTES);
+  CUDA_CALL(cudaMemcpy(host, dev1, MEMORY_BYTES, cudaMemcpyDeviceToHost));
   CUDA_CALL(cudaGetLastError());
-  float x = ((s0.b - s0.a) * (*h0.h_o)) / (s0.size);
+  float x = ((s0.u) * (*host)) / (s0.size);
   float err = fabs_err(x, EXPECTED_VALUE);
   rprintf("sfsf", "Result", x, "Error", err);
+  t2 = std::chrono::high_resolution_clock::now();
+  ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);
+  std::cout << "Time performing device_vector copy to host and compute result: " << ms_int.count() << "us\n";
 
   // Free memory
-  free(h0.h_o);
-  CUDA_CALL(cudaFree(d0.d_i));
-  CUDA_CALL(cudaFree(d0.d_o));
+  free(host);
+  CUDA_CALL(cudaFree(dev0));
+  CUDA_CALL(cudaFree(dev1));
+  CURAND_CALL(curandDestroyGenerator(gen));
 
   return EXIT_SUCCESS;
 }
