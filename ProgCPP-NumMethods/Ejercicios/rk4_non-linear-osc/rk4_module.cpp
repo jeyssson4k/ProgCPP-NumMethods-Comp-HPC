@@ -9,6 +9,9 @@ RungeKuta
 double force(double x){
     return -k*std::pow(x, lambda);
 }
+double force(double m, double v){
+  return -m*b*v;
+}
 void f(const array &s, array &dsdt, double t, double FX){
   dsdt[0] = s[1];
   dsdt[1] = -w*w*s[0] + FX;
@@ -19,9 +22,11 @@ void rk(int dim, double m, array &s, array &aux, array &k_i){
 }
 void rk4(array &s, double t0, double tf, double h){
   int dim = s.size();
+  double m = 1.0;
   array dsdt(dim), aux(dim), k1(dim), k2(dim), k3(dim), k4(dim);
   for(double t=t0; t <= tf; t+=h){
-    double fx = force(s[0]);
+    double fx = force(m, s[1]);
+    //double fx = force(s[0]);
     //Computing k1
     f(s, k1, t, fx);
     rk(dim, 0.5*h, s, aux, k1);

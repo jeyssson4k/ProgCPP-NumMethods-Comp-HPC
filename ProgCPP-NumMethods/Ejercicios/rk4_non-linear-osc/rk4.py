@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 # Leer los datos del archivo .txt
-with open('data.txt', 'r') as file:
+with open('data0.txt', 'r') as file:
     lines = file.readlines()
 
 # Extraer las columnas x e y
