@@ -1,0 +1,25 @@
+set terminal pdfcairo size 12cm,8cm enhanced font 'Verdana,10'
+set output 'reactors_plot.pdf'
+
+títulos
+set title " "
+set xlabel " "
+set ylabel " "
+set grid
+
+# Plot data from reactors.txt
+plot "reactors.txt" using 1:2 title 'A1' with lines lw 2, \
+     "reactors.txt" using 1:3 title 'A2' with lines lw 2, \
+     "reactors.txt" using 1:4 title 'B1' with lines lw 2, \
+     "reactors.txt" using 1:5 title 'B2' with lines lw 2
+
+set output
+
+
+set title " "
+set xlabel " "
+set ylabel " "
+set grid
+
+
+plot "archivo txt" using 1:2 title 'el que sea' with lines lw 2
