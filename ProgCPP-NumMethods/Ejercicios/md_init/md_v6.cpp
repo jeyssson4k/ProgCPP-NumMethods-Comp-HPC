@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <cmath>
 #include <fstream>
 
 // modelar la particula
@@ -23,19 +24,20 @@ void print_gnuplot(const std::vector<Particle> & particles, std::map<std::string
 void print_paraview(const std::vector<Particle> & particles, std::map<std::string, double> &params, int iter, double time);
 
 int main(int argc, char *argv[]) {
-  const int N = 1;
+  const int N = 2;
   std::vector<Particle> particles{N};
 
   // parametros
   std::map<std::string, double> PARAMS;
-  PARAMS["G"] = 9.81; // Gravity module, m/s^2
+  PARAMS["G"] = 0.0; // Gravity module, m/s^2
   PARAMS["K"] = 8230.4567; // Elastic constant, N/m
   PARAMS["B"] = 0.0; // Damping strength, 1/s
   PARAMS["WRX"] = 4.9786; // Damping strength, 1/s
   PARAMS["WLX"] = 0.0; // Damping strength, 1/s
-  PARAMS["DT"] = 0.001; // Time step size, s
+  PARAMS["WTZ"] = 1.45; // Damping strength, 1/s  
+  PARAMS["DT"] = 0.01; // Time step size, s
   PARAMS["T0"] = 0.0; // Initial time, s
-  PARAMS["TF"] = 10.3456; // Final time, s 
+  PARAMS["TF"] = 20.0; // Final time, s 
   PARAMS["NSTEPS"] = int((PARAMS["TF"]-PARAMS["T0"])/PARAMS["DT"]); // [-]
 
 
@@ -50,9 +52,6 @@ int main(int argc, char *argv[]) {
     time_step(particles, PARAMS);
     double time = PARAMS["T0"] + istep*PARAMS["DT"];
     print_gnuplot(particles, PARAMS, time);
-    if (istep % 20 == 0) {
-      print_paraview(particles, PARAMS, istep, time);
-    }
   }
 
 
@@ -67,45 +66,43 @@ void initial_conditions(std::vector<Particle> & particles) {
   particles[0].V[2] = +3.21323432;
   particles[0].R[0] = 1.01323432;
   particles[0].V[0] = +1.87654;
+
+  particles[1].mass = 1.987;
+  particles[1].rad =  0.1765;
+  particles[1].R[2] = 1.21323432 + 0.00001;
+  particles[1].V[2] = +3.21323432;
+  particles[1].R[0] = 1.01323432;
+  particles[1].V[0] = +1.87654;
+ 
 }
 
 
 void compute_forces(std::vector<Particle> &particles, std::map<std::string, double> &params) {
   // reset forces
-  for (auto & body : particles) {
-    //body.Fz = 0.0;
-    for (int ii = 0; ii < 3; ii++) {
-      body.F[ii] = 0.0;
-    }
-  }
+  for (auto & body : particles) {for (int ii = 0; ii < 3; ii++) {body.F[ii] = 0.0;}}
   // Add gravitational forces
-  for (auto & body : particles) {
-    body.F[2] -= body.mass*params["G"];
-  }
+  for (auto & body : particles) {body.F[2] -= body.mass*params["G"];}
   // Add damping vertical force
-  for (auto & body : particles) {
-    body.F[2] -= body.mass*params["B"]*body.V[2];
-  }
+  for (auto & body : particles) {body.F[2] -= body.mass*params["B"]*body.V[2];}
   // Force against the floor
   for (auto & body : particles) {
     double delta = body.rad - body.R[2];
-    if (delta >= 0) {
-      body.F[2] += params["K"]*delta;
-    }
+    if (delta >= 0) {body.F[2] += params["K"]*delta;}
+  }
+  // Force against the ceil
+  for (auto & body : particles) {
+    double delta = body.rad + body.R[2] - params["WTZ"];
+    if (delta >= 0) {body.F[2] -= params["K"]*delta;}
   }
   // Force against the right wall
   for (auto & body : particles) {
     double delta = body.rad + body.R[0] - params["WRX"];
-    if (delta >= 0) {
-      body.F[0] -= params["K"]*delta;
-    }
+    if (delta >= 0) {body.F[0] -= params["K"]*delta;}
   }
   // Force against the left wall
   for (auto & body : particles) {
     double delta = +body.rad - body.R[0] + params["WLX"];
-    if (delta >= 0) {
-      body.F[0] += params["K"]*delta;
-    }
+    if (delta >= 0) {body.F[0] += params["K"]*delta;}
   }
 }
 
@@ -133,21 +130,14 @@ void time_step(std::vector<Particle> &particles,
 
 void print_gnuplot(const std::vector<Particle> &particles,
                     std::map<std::string, double> &params, double time) {
-  std::cout << time << " ";
-  for (const auto & body : particles) {
-    std::cout << body.mass << " ";
-    std::cout << body.rad << " ";
-    for (int ii = 0; ii < 3; ++ii) {
-      std::cout << body.R[ii] << " ";
-    }
-    for (int ii = 0; ii < 3; ++ii) {
-      std::cout << body.V[ii] << " ";
-    }
-    for (int ii = 0; ii < 3; ++ii) {
-      std::cout << body.F[ii] << " ";
-    }
-  }
-  std::cout << "\n";
+  std::cout << time << "\t";
+  double 
+  x = -particles[0].R[0]+particles[1].R[0], 
+  y = -particles[0].R[1]+particles[1].R[1], 
+  z = -particles[0].R[2]+particles[1].R[2];
+
+  double r = std::sqrt((x*x)+(y*y)+(z*z));
+  std::cout << r << "\n";
 }
 
 
