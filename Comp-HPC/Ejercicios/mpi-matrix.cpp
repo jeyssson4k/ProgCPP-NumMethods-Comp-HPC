@@ -4,50 +4,52 @@
 
 #define BYTES sizeof(int)
 
-void vprintf(int *v, int size);
+void vprintf(int *v, int size, int pid);
 void initialize_row(int *row, int idx, int n);
-int* initialize_all_rows(int start, int end, int n, int pid);
+int** initialize_all_rows(int start, int end, int n, int pid);
 
 int main(int argc, char**argv){
-    //Amount of params is different to expected amount of params
-    if(argc != 2) return EXIT_FAILURE;
     const int n = std::atoi(argv[1]);
-    int pid, int tasks;
+    int pid, tasks;
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &tasks);
     MPI_Comm_rank(MPI_COMM_WORLD, &pid);
 
-    //Amount of tasks is a N divisor?
-    if(n/tasks != 0) return EXIT_FAILURE;
-    std::printf("Matrix size: %d x %d\n\n", n, n);
+    
+    int tag = 0;
     int start = (n/tasks)*pid;
     int end = (n/tasks)*(1+pid);
-    int* rows = initialize_all_rows(start, end, n, pid);
+    int** rows = initialize_all_rows(start, end, n, pid);
     if(pid == 0){
-        //TODO: Get rows from each pid 
-        //TODO: Print each row
+        printf("Matrix size: %d x %d\n", n, n);
+        printf("---------------------------------------------------------------------------------------\n");
         for(int i=start; i < end; ++i){
-            printf("Printing from pid %d\n", pid);
-            vprintf(rows[i], n);
+            vprintf(rows[i], n, pid);
         }
-    }
+        
+        for(int i=1; i < tasks; ++i){
+            int* pids_rows = (int*) malloc(n*BYTES);
+            for(int j=start; j < end; ++j){
+                MPI_Recv(pids_rows, n, MPI_INT, i, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                vprintf(pids_rows, n, i);
+            } 
+        }
+        printf("---------------------------------------------------------------------------------------\n");
     }else{
-        //TODO: Send rows to pid 0
         for(int i=start; i < end; ++i){
-            printf("Printing from pid %d\n", pid);
-            vprintf(rows[i], n);
-        }
+            MPI_Send(rows[i], n, MPI_INT, 0, tag, MPI_COMM_WORLD);
+        }    
     }
     
     MPI_Finalize();  
     return EXIT_SUCCESS;
 }
 
-void vprintf(int *v, int size){
+void vprintf(int *v, int size, int pid){
     for(int i=0; i < size; ++i){
         printf("%d\t", v[i]);
     }
-    printf("\n");
+    printf("\tProceso%d\n",pid);
 }
 void initialize_row(int *row, int idx, int n){
     for(int i=0; i < n; ++i){
@@ -58,11 +60,11 @@ void initialize_row(int *row, int idx, int n){
         }
     }
 }
-int* initialize_all_rows(int start, int end, int n, int pid){
+int** initialize_all_rows(int start, int end, int n, int pid){
     int nrows = end-start;
-    int* rows[nrows];
+    int** rows = (int**) malloc(n*BYTES*nrows);
     for(int i=start; i < end; ++i){
-        int *irow = (int*) malloc(n*SIZE);
+        int *irow = (int*) malloc(n*BYTES);
         initialize_row(irow, i, n);
         rows[i] = irow;
     }
