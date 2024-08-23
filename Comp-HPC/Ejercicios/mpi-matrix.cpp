@@ -26,21 +26,37 @@ int main(int argc, char**argv){
         for(int i=start; i < end; ++i){
             vprintf(rows[i], n, pid);
         }
-        
+        double bw = 0.0;
         for(int i=1; i < tasks; ++i){
             int* pids_rows = (int*) malloc(n*BYTES);
+            double tf = 0.0, starttime, endtime, send_time;
             for(int j=start; j < end; ++j){
+                starttime = MPI_Wtime();
                 MPI_Recv(pids_rows, n, MPI_INT, i, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                endtime = MPI_Wtime();
+                tf += (endtime - starttime);
                 vprintf(pids_rows, n, i);
-            } 
+            }
+            MPI_Recv(&send_time, 1, MPI_DOUBLE, i, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            tf += send_time;
+            bw += ((end-start)*n*BYTES)/(tf/2.0);
+            free(pids_rows);
         }
         printf("---------------------------------------------------------------------------------------\n");
+        printf("Average Bandwidth: %.5f bytes/second\n", bw/tasks);
     }else{
+        double starttime, endtime, ttime;
+        starttime = MPI_Wtime();
         for(int i=start; i < end; ++i){
             MPI_Send(rows[i], n, MPI_INT, 0, tag, MPI_COMM_WORLD);
-        }    
+        } 
+        endtime = MPI_Wtime(); 
+        ttime = endtime-starttime;
+        MPI_Send(&ttime, 1, MPI_DOUBLE, 0, tag, MPI_COMM_WORLD);
     }
-    
+    for(int i=start; i < end; ++i){
+        free(rows[i]);
+    }
     MPI_Finalize();  
     return EXIT_SUCCESS;
 }
