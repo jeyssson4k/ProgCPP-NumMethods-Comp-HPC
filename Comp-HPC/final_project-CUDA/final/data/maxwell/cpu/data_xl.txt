@@ -1,421 +1,271 @@
-Executing on CPU
-Executing using single core...
-Time performing integral: 9852ms
-Result:	0.8862097822
-Error:	0.0000194282
+1   9852    0.8862097822    0.0000194282
+2   15834   0.8861670718    0.0000676217
+3   14436   0.8863736685    0.0001654977
+4   15604   0.8861463839    0.0000909655
+5   15094   0.8863781582    0.0001705638
+6   15278   0.8859309132    0.0003340982
+7   15275   0.8861273027    0.0001124964
+8   14888   0.8860805958    0.0001651994
+9   16272   0.8861467554    0.0000905464
+10  15613   0.8859800192    0.0002786879
+11  16967   0.8862174553    0.0000107700
+12  17303   0.8864247276    0.0002231117
+13  17434   0.8861262769    0.0001136538
+14  18570   0.8861057928    0.0001367676
+15  19480   0.8862503949    0.0000263983
+16  20189   0.8857918683    0.0004909935
+17  19692   0.8859903769    0.0002670006
+18  19013   0.8857005289    0.0005940589
+19  19639   0.8861425575    0.0000952832
+20  20073   0.8859237343    0.0003421986
+21  20720   0.8860155794    0.0002385625
+22  20528   0.8864230839    0.0002212569
+23  21132   0.8863203741    0.0001053614
+24  21494   0.8860704052    0.0001766983
+25  21024   0.8860604628    0.0001879171
+26  20764   0.8863155224    0.0000998868
+27  20199   0.8860224847    0.0002307708
+28  17893   0.8865780952    0.0003961685
+29  18278   0.8856517803    0.0006490659
+30  17403   0.8865311983    0.0003432510
 
-Executing on CPU
-Executing using multi core...
-Number of threads = 2
-Time performing integral: 15834ms
-Result:	0.8861670718
-Error:	0.0000676217
-Executing on CPU
-Executing using multi core...
-Number of threads = 3
-Time performing integral: 14436ms
-Result:	0.8863736685
-Error:	0.0001654977
-Executing on CPU
-Executing using multi core...
-Number of threads = 4
-Time performing integral: 15604ms
-Result:	0.8861463839
-Error:	0.0000909655
-Executing on CPU
-Executing using multi core...
-Number of threads = 5
-Time performing integral: 15094ms
-Result:	0.8863781582
-Error:	0.0001705638
-Executing on CPU
-Executing using multi core...
-Number of threads = 6
-Time performing integral: 15278ms
-Result:	0.8859309132
-Error:	0.0003340982
-Executing on CPU
-Executing using multi core...
-Number of threads = 7
-Time performing integral: 15275ms
-Result:	0.8861273027
-Error:	0.0001124964
-Executing on CPU
-Executing using multi core...
-Number of threads = 8
-Time performing integral: 14888ms
-Result:	0.8860805958
-Error:	0.0001651994
-Executing on CPU
-Executing using multi core...
-Number of threads = 9
-Time performing integral: 16272ms
-Result:	0.8861467554
-Error:	0.0000905464
-Executing on CPU
-Executing using multi core...
-Number of threads = 10
-Time performing integral: 15613ms
-Result:	0.8859800192
-Error:	0.0002786879
-Executing on CPU
-Executing using multi core...
-Number of threads = 11
-Time performing integral: 16967ms
-Result:	0.8862174553
-Error:	0.0000107700
-Executing on CPU
-Executing using multi core...
-Number of threads = 12
-Time performing integral: 17303ms
-Result:	0.8864247276
-Error:	0.0002231117
-Executing on CPU
-Executing using multi core...
-Number of threads = 13
-Time performing integral: 17434ms
-Result:	0.8861262769
-Error:	0.0001136538
-Executing on CPU
-Executing using multi core...
-Number of threads = 14
-Time performing integral: 18570ms
-Result:	0.8861057928
-Error:	0.0001367676
-Executing on CPU
-Executing using multi core...
-Number of threads = 15
-Time performing integral: 19480ms
-Result:	0.8862503949
-Error:	0.0000263983
-Executing on CPU
-Executing using multi core...
-Number of threads = 16
-Time performing integral: 20189ms
-Result:	0.8857918683
-Error:	0.0004909935
-Executing on CPU
-Executing using multi core...
-Number of threads = 17
-Time performing integral: 19692ms
-Result:	0.8859903769
-Error:	0.0002670006
-Executing on CPU
-Executing using multi core...
-Number of threads = 18
-Time performing integral: 19013ms
-Result:	0.8857005289
-Error:	0.0005940589
-Executing on CPU
-Executing using multi core...
-Number of threads = 19
-Time performing integral: 19639ms
-Result:	0.8861425575
-Error:	0.0000952832
-Executing on CPU
-Executing using multi core...
-Number of threads = 20
-Time performing integral: 20073ms
-Result:	0.8859237343
-Error:	0.0003421986
-Executing on CPU
-Executing using multi core...
-Number of threads = 21
-Time performing integral: 20720ms
-Result:	0.8860155794
-Error:	0.0002385625
-Executing on CPU
-Executing using multi core...
-Number of threads = 22
-Time performing integral: 20528ms
-Result:	0.8864230839
-Error:	0.0002212569
-Executing on CPU
-Executing using multi core...
-Number of threads = 23
-Time performing integral: 21132ms
-Result:	0.8863203741
-Error:	0.0001053614
-Executing on CPU
-Executing using multi core...
-Number of threads = 24
-Time performing integral: 21494ms
-Result:	0.8860704052
-Error:	0.0001766983
-Executing on CPU
-Executing using multi core...
-Number of threads = 25
-Time performing integral: 21024ms
-Result:	0.8860604628
-Error:	0.0001879171
-Executing on CPU
-Executing using multi core...
-Number of threads = 26
-Time performing integral: 20764ms
-Result:	0.8863155224
-Error:	0.0000998868
-Executing on CPU
-Executing using multi core...
-Number of threads = 27
-Time performing integral: 20199ms
-Result:	0.8860224847
-Error:	0.0002307708
-Executing on CPU
-Executing using multi core...
-Number of threads = 28
-Time performing integral: 17893ms
-Result:	0.8865780952
-Error:	0.0003961685
-Executing on CPU
-Executing using multi core...
-Number of threads = 29
-Time performing integral: 18278ms
-Result:	0.8856517803
-Error:	0.0006490659
-Executing on CPU
-Executing using multi core...
-Number of threads = 30
-Time performing integral: 17403ms
-Result:	0.8865311983
-Error:	0.0003432510
-Executing on CPU
-Executing using multi core...
-Number of threads = 31
-Time performing integral: 17907ms
-Result:	0.8860651762
-Error:	0.0001825986
-Executing on CPU
-Executing using multi core...
-Number of threads = 32
-Time performing integral: 17420ms
-Result:	0.8856098752
-Error:	0.0006963508
-Executing on CPU
-Executing using multi core...
-Number of threads = 33
-Time performing integral: 16075ms
-Result:	0.8860347155
-Error:	0.0002169698
-Executing on CPU
-Executing using multi core...
-Number of threads = 34
-Time performing integral: 15850ms
-Result:	0.8861447478
-Error:	0.0000928116
-Executing on CPU
-Executing using multi core...
-Number of threads = 35
-Time performing integral: 14889ms
-Result:	0.8859861115
-Error:	0.0002718135
-Executing on CPU
-Executing using multi core...
-Number of threads = 36
-Time performing integral: 14734ms
-Result:	0.8862800259
-Error:	0.0000598333
-Executing on CPU
-Executing using multi core...
-Number of threads = 37
-Time performing integral: 14626ms
-Result:	0.8863297400
-Error:	0.0001159297
-Executing on CPU
-Executing using multi core...
-Number of threads = 38
-Time performing integral: 14718ms
-Result:	0.8861519385
-Error:	0.0000846979
-Executing on CPU
-Executing using multi core...
-Number of threads = 39
-Time performing integral: 15035ms
-Result:	0.8865248688
-Error:	0.0003361089
-Executing on CPU
-Executing using multi core...
-Number of threads = 40
-Time performing integral: 14972ms
-Result:	0.8863519900
-Error:	0.0001410361
-Executing on CPU
-Executing using multi core...
-Number of threads = 41
-Time performing integral: 14288ms
-Result:	0.8867685405
-Error:	0.0006110629
-Executing on CPU
-Executing using multi core...
-Number of threads = 42
-Time performing integral: 14654ms
-Result:	0.8858071378
-Error:	0.0004737638
-Executing on CPU
-Executing using multi core...
-Number of threads = 43
-Time performing integral: 14256ms
-Result:	0.8860886020
-Error:	0.0001561654
-Executing on CPU
-Executing using multi core...
-Number of threads = 44
-Time performing integral: 13947ms
-Result:	0.8862718602
-Error:	0.0000506193
-Executing on CPU
-Executing using multi core...
-Number of threads = 45
-Time performing integral: 14089ms
-Result:	0.8865458447
-Error:	0.0003597777
-Executing on CPU
-Executing using multi core...
-Number of threads = 46
-Time performing integral: 13958ms
-Result:	0.8862860284
-Error:	0.0000666064
-Executing on CPU
-Executing using multi core...
-Number of threads = 47
-Time performing integral: 13538ms
-Result:	0.8860233515
-Error:	0.0002297927
-Executing on CPU
-Executing using multi core...
-Number of threads = 48
-Time performing integral: 13729ms
-Result:	0.8867027960
-Error:	0.0005368782
-Executing on CPU
-Executing using multi core...
-Number of threads = 49
-Time performing integral: 13490ms
-Result:	0.8865125868
-Error:	0.0003222502
-Executing on CPU
-Executing using multi core...
-Number of threads = 50
-Time performing integral: 13056ms
-Result:	0.8859217131
-Error:	0.0003444794
-Executing on CPU
-Executing using multi core...
-Number of threads = 51
-Time performing integral: 12973ms
-Result:	0.8863381143
-Error:	0.0001253791
-Executing on CPU
-Executing using multi core...
-Number of threads = 52
-Time performing integral: 12703ms
-Result:	0.8867858818
-Error:	0.0006306306
-Executing on CPU
-Executing using multi core...
-Number of threads = 53
-Time performing integral: 12749ms
-Result:	0.8866299329
-Error:	0.0004546610
-Executing on CPU
-Executing using multi core...
-Number of threads = 54
-Time performing integral: 12380ms
-Result:	0.8854323803
-Error:	0.0008966322
-Executing on CPU
-Executing using multi core...
-Number of threads = 55
-Time performing integral: 12552ms
-Result:	0.8864702180
-Error:	0.0002744421
-Executing on CPU
-Executing using multi core...
-Number of threads = 56
-Time performing integral: 12414ms
-Result:	0.8859355851
-Error:	0.0003288265
-Executing on CPU
-Executing using multi core...
-Number of threads = 57
-Time performing integral: 12519ms
-Result:	0.8857331284
-Error:	0.0005572744
-Executing on CPU
-Executing using multi core...
-Number of threads = 58
-Time performing integral: 12634ms
-Result:	0.8868366807
-Error:	0.0006879509
-Executing on CPU
-Executing using multi core...
-Number of threads = 59
-Time performing integral: 12076ms
-Result:	0.8863514008
-Error:	0.0001403712
-Executing on CPU
-Executing using multi core...
-Number of threads = 60
-Time performing integral: 11995ms
-Result:	0.8862516938
-Error:	0.0000278640
-Executing on CPU
-Executing using multi core...
-Number of threads = 61
-Time performing integral: 12250ms
-Result:	0.8862778990
-Error:	0.0000574334
-Executing on CPU
-Executing using multi core...
-Number of threads = 62
-Time performing integral: 11608ms
-Result:	0.8864201936
-Error:	0.0002179956
-Executing on CPU
-Executing using multi core...
-Number of threads = 63
-Time performing integral: 11847ms
-Result:	0.8867488892
-Error:	0.0005888889
-Executing on CPU
-Executing using multi core...
-Number of threads = 64
-Time performing integral: 11933ms
-Result:	0.8866526554
-Error:	0.0004803006
-Executing on CPU
-Executing using multi core...
-Number of threads = 65
-Time performing integral: 11374ms
-Result:	0.8864345446
-Error:	0.0002341890
-Executing on CPU
-Executing using multi core...
-Number of threads = 66
-Time performing integral: 11924ms
-Result:	0.8862064468
-Error:	0.0000231918
-Executing on CPU
-Executing using multi core...
-Number of threads = 67
-Time performing integral: 11341ms
-Result:	0.8862996494
-Error:	0.0000819761
-Executing on CPU
-Executing using multi core...
-Number of threads = 68
-Time performing integral: 12006ms
-Result:	0.8868210872
-Error:	0.0006703555
-Executing on CPU
-Executing using multi core...
-Number of threads = 69
-Time performing integral: 11859ms
-Result:	0.8862449669
-Error:	0.0000202735
-Executing on CPU
-Executing using multi core...
-Number of threads = 70
-Time performing integral: 11978ms
-Result:	0.8860303819
-Error:	0.0002218597
+
+31
+17907
+0.8860651762
+0.0001825986
+
+
+32
+17420
+0.8856098752
+0.0006963508
+
+
+33
+16075
+0.8860347155
+0.0002169698
+
+
+34
+15850
+0.8861447478
+0.0000928116
+
+
+35
+14889
+0.8859861115
+0.0002718135
+
+
+36
+14734
+0.8862800259
+0.0000598333
+
+
+37
+14626
+0.8863297400
+0.0001159297
+
+
+38
+14718
+0.8861519385
+0.0000846979
+
+
+39
+15035
+0.8865248688
+0.0003361089
+
+
+40
+14972
+0.8863519900
+0.0001410361
+
+
+41
+14288
+0.8867685405
+0.0006110629
+
+
+42
+14654
+0.8858071378
+0.0004737638
+
+
+43
+14256
+0.8860886020
+0.0001561654
+
+
+44
+13947
+0.8862718602
+0.0000506193
+
+
+45
+14089
+0.8865458447
+0.0003597777
+
+
+46
+13958
+0.8862860284
+0.0000666064
+
+
+47
+13538
+0.8860233515
+0.0002297927
+
+
+48
+13729
+0.8867027960
+0.0005368782
+
+
+49
+13490
+0.8865125868
+0.0003222502
+
+
+50
+13056
+0.8859217131
+0.0003444794
+
+
+51
+12973
+0.8863381143
+0.0001253791
+
+
+52
+12703
+0.8867858818
+0.0006306306
+
+
+53
+12749
+0.8866299329
+0.0004546610
+
+
+54
+12380
+0.8854323803
+0.0008966322
+
+
+55
+12552
+0.8864702180
+0.0002744421
+
+
+56
+12414
+0.8859355851
+0.0003288265
+
+
+57
+12519
+0.8857331284
+0.0005572744
+
+
+58
+12634
+0.8868366807
+0.0006879509
+
+
+59
+12076
+0.8863514008
+0.0001403712
+
+
+60
+11995
+0.8862516938
+0.0000278640
+
+
+61
+12250
+0.8862778990
+0.0000574334
+
+
+62
+11608
+0.8864201936
+0.0002179956
+
+
+63
+11847
+0.8867488892
+0.0005888889
+
+
+64
+11933
+0.8866526554
+0.0004803006
+
+
+65
+11374
+0.8864345446
+0.0002341890
+
+
+66
+11924
+0.8862064468
+0.0000231918
+
+
+67
+11341
+0.8862996494
+0.0000819761
+
+
+68
+12006
+0.8868210872
+0.0006703555
+
+
+69
+11859
+0.8862449669
+0.0000202735
+
+
+70
+11978
+0.8860303819
+0.0002218597
 
