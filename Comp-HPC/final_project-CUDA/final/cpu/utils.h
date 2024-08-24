@@ -6,6 +6,8 @@
 #include <random>
 #include <vector>
 #include <omp.h>
+#include <chrono>
+#include <iostream>
 
 namespace utils
 {

@@ -13,6 +13,7 @@ int main(int argc, char *argv[]){
 
     printf("Executing on CPU\n"); 
     utils::MontecarloIO integrate = utils::MontecarloIO(L_LIMIT, U_LIMIT, N);
+    auto t1 = std::chrono::high_resolution_clock::now();
     if(IS_PARALLEL){
         integrate.montecarlo_OMP([](double x){return std::exp(-1.0*x*x);});
     }else{
@@ -21,7 +22,9 @@ int main(int argc, char *argv[]){
 
     integrate.computeResult();
     integrate.computeError(EXPECTED_VALUE);
-
+    auto t2 = std::chrono::high_resolution_clock::now();
+    auto ms_int = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1);
+    std::cout << "Time performing integral: " << ms_int.count() << "ms\n";
     double u = integrate.getRes();
     double v = integrate.getError();
     utils::rprintf("sfsf","Result", u, "Error", v);
