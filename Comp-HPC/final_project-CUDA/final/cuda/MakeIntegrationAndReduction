@@ -1,0 +1,29 @@
+# Variables
+COMPILER = nvcc
+LIBS = -lcurand
+REDUCTION = cuda__reduction.cu
+INTEGRATION = cuda__integration.cu
+COMPLEMENTS = lib.cpp
+RED_OUT = reduction.out
+INTG_OUT = integration.out
+COMPILER_PATH = -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64\cl.exe"
+
+MATRIX_SIZE = 22500
+SEED = 1234
+THREAD_DIM = 32
+THREADS = 1024
+A = 0.0
+B = 6.55
+EXPECTED_VALUE = 0.886227
+INTG_OUT_FILE_PATH = f_x.txt 
+INTG_ARGUMENTS = $(MATRIX_SIZE) $(SEED) $(THREAD_DIM) $(A) $(B) $(EXPECTED_VALUE) $(INTG_OUT_FILE_PATH)
+RED_ARGUMENTS = $(MATRIX_SIZE) $(SEED) $(THREADS) $(A) $(B) $(EXPECTED_VALUE) $(INTG_OUT_FILE_PATH)
+
+all: $(RED_OUT)
+# Compile target
+$(INTG_OUT): $(INTEGRATION)
+	$(COMPILER) $(INTEGRATION) $(COMPLEMENTS) $(LIBS) $(COMPILER_PATH) -o $(INTG_OUT)
+	./$(INTG_OUT) $(INTG_ARGUMENTS)
+$(RED_OUT): $(INTG_OUT)
+	$(COMPILER) $(REDUCTION) $(COMPLEMENTS) $(LIBS) $(COMPILER_PATH) -o $(RED_OUT)
+	./$(RED_OUT) $(RED_ARGUMENTS)
