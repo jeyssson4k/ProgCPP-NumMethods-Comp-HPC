@@ -4,23 +4,23 @@
 #include "lib.h"
 
 __device__ float f(float x) { return std::exp(-1.0 * x * x); }
-__global__ void sumReduction(float *v, float *v_r, bool isInitialLoading, S st)
+__global__ void sumReduction(float *u, float *v, bool isInitialLoading, S st)
 {
-  /* Initialize components */
-  extern __shared__ float partial_sum[];
+  //Initialize components
+  extern __shared__ float w[];
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
   nvstd::function<float(float)> fn = f;
 
-  // Load elements into shared memory
+  // Load elements into shared memory based on first execution
   if (isInitialLoading)
   {
-    float y = fn((st.b - st.a) * v[tid]);
-    partial_sum[threadIdx.x] = y;
+    float y = fn((st.b - st.a) * u[tid]);
+    w[threadIdx.x] = y;
     __syncthreads();
   }
   else
   {
-    partial_sum[threadIdx.x] = v[tid];
+    w[threadIdx.x] = u[tid];
     __syncthreads();
   }
   __syncthreads();
