@@ -2,29 +2,24 @@
 #include <curand.h>
 #include "lib.h"
 
-__global__ void sumReduction(float *v, float *v_r, S st)
+__global__ void vector_reduction(float *u, float *v, S st)
 {
-  /* Initialize components */
-  extern __shared__ float partial_sum[];
+  // Initialize components
+  extern __shared__ float w[];
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
-  partial_sum[threadIdx.x] = v[tid];
+  w[threadIdx.x] = u[tid];
   __syncthreads();
 
-  // Increase the stride of the access until we exceed the CTA dimensions
+  // Acummulate values for each thread
   for (int s = blockDim.x / 2; s > 0; s >>= 1)
   {
-    // Each thread does work unless it is further than the stride
-    if (threadIdx.x < s)
-    {
-      partial_sum[threadIdx.x] += partial_sum[threadIdx.x + s];
-    }
+    if (threadIdx.x < s) w[threadIdx.x] += w[threadIdx.x + s];
     __syncthreads();
   }
 
-  // Let the thread 0 for this block write it's result to main memory
-  // Result is indexed by this block
+  // Thread 0 should be the one that write results into output vector
   if (threadIdx.x == 0)
-    v_r[blockIdx.x] = partial_sum[0];
+    v[blockIdx.x] = w[0];
 }
 
 int main(int argc, char **argv)
@@ -63,8 +58,8 @@ int main(int argc, char **argv)
 
   // Launch the kernel
   t1 = std::chrono::high_resolution_clock::now();
-  sumReduction<<<s0.blocksPerGrid, s0.threadsPerBlock, SHARED_MEM>>>(dev0, dev1, s0);
-  sumReduction<<<1, s0.threadsPerBlock, SHARED_MEM>>>(dev1, dev1, s0);
+  vector_reduction<<<s0.blocksPerGrid, s0.threadsPerBlock, SHARED_MEM>>>(dev0, dev1, s0);
+  vector_reduction<<<1, s0.threadsPerBlock, SHARED_MEM>>>(dev1, dev1, s0);
   CUDA_CALL(cudaGetLastError());
   t2 = std::chrono::high_resolution_clock::now();
   ms_int = std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1);

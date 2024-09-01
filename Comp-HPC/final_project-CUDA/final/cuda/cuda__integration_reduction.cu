@@ -4,47 +4,37 @@
 #include "lib.h"
 
 __device__ float f(float x) { return std::exp(-1.0 * x * x); }
-__global__ void sumReduction(float *v, float *v_r, bool isInitialLoading, S st)
+__global__ void sumReduction(float *u, float *v, bool isInitialLoading, S st)
 {
-  /* Initialize components */
-  extern __shared__ float partial_sum[];
+  //Initialize components
+  extern __shared__ float w[];
   int tid = blockIdx.x * blockDim.x + threadIdx.x;
   nvstd::function<float(float)> fn = f;
 
-  // Load elements into shared memory
+  // Load elements into shared memory based on first execution
   if (isInitialLoading)
   {
-    float y = fn((st.b - st.a) * v[tid]);
-    partial_sum[threadIdx.x] = y;
+    float y = fn((st.b - st.a) * u[tid]);
+    w[threadIdx.x] = y;
     __syncthreads();
   }
   else
   {
-    partial_sum[threadIdx.x] = v[tid];
+    w[threadIdx.x] = u[tid];
     __syncthreads();
   }
   __syncthreads();
 
-  // Increase the stride of the access until we exceed the CTA dimensions
-  for (int s = 1; s < blockDim.x; s <<= 1)
+  // Acummulate values for each thread
+  for (int s = blockDim.x / 2; s > 0; s >>= 1)
   {
-    // Change the indexing to be sequential threads
-    int index = 2 * s * threadIdx.x;
-
-    // Each thread does work unless the index goes off the block
-    if (index < blockDim.x)
-    {
-      partial_sum[index] += partial_sum[index + s];
-    }
+    if (threadIdx.x < s) w[threadIdx.x] += w[threadIdx.x + s];
     __syncthreads();
   }
 
-  // Let the thread 0 for this block write it's result to main memory
-  // Result is inexed by this block
+  // Thread 0 should be the one that write results into output vector
   if (threadIdx.x == 0)
-  {
-    v_r[blockIdx.x] = partial_sum[0];
-  }
+    v[blockIdx.x] = w[0];
 }
 
 int main(int argc, char **argv)
