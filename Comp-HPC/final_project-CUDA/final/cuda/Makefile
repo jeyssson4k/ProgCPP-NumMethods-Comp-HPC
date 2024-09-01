@@ -1,26 +1,29 @@
 # Variables
 COMPILER = nvcc
-FLAGS = -rdc=true
 LIBS = -lcurand
-FILENAME = mc-reduction.cu
+REDUCTION = cuda__reduction.cu
+INTEGRATION = cuda__integration.cu
 COMPLEMENTS = lib.cpp
-OUTPUT = cuda.x
+RED_OUT = reduction.out
+INTG_OUT = integration.out
 COMPILER_PATH = -ccbin "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\bin\Hostx64\x64\cl.exe"
-ARGUMENTS = 22500 1234 32 0.0 6.55 0.886227 f_x.txt
 
-# Default target
-all: $(OUTPUT)
+MATRIX_SIZE = 22500
+SEED = 1234
+THREAD_DIM = 32
+THREADS = 1024
+A = 0.0
+B = 6.55
+EXPECTED_VALUE = 0.886227
+INTG_OUT_FILE_PATH = f_x.txt 
+INTG_ARGUMENTS = $(MATRIX_SIZE) $(SEED) $(THREAD_DIM) $(A) $(B) $(EXPECTED_VALUE) $(INTG_OUT_FILE_PATH)
+RED_ARGUMENTS = $(MATRIX_SIZE) $(SEED) $(THREADS) $(A) $(B) $(EXPECTED_VALUE) $(INTG_OUT_FILE_PATH)
 
+all: $(RED_OUT)
 # Compile target
-$(OUTPUT): $(FILENAME)
-	$(COMPILER) $(FLAGS) $(FILENAME) $(COMPLEMENTS) $(LIBS) $(COMPILER_PATH) -o $(OUTPUT)
-
-# Run target
-run: $(OUTPUT)
-	./$(OUTPUT) $(ARGUMENTS)
-
-# Clean target
-clean:
-	rm -f $(OUTPUT)
-
-.PHONY: all clean run
+$(INTG_OUT): $(INTEGRATION)
+	$(COMPILER) $(INTEGRATION) $(COMPLEMENTS) $(LIBS) $(COMPILER_PATH) -o $(INTG_OUT)
+	./$(INTG_OUT) $(INTG_ARGUMENTS)
+$(RED_OUT): $(INTG_OUT)
+	$(COMPILER) $(REDUCTION) $(COMPLEMENTS) $(LIBS) $(COMPILER_PATH) -o $(RED_OUT)
+	./$(RED_OUT) $(RED_ARGUMENTS)

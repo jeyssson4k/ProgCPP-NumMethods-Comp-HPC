@@ -87,5 +87,6 @@ int main(int argc, char **argv)
     float u0 = (B - A) * x / (N * N);
     float v = std::fabs(1 - (u0 / EXPECTED_VALUE));
     rprintf("sfsf", "Result", u0, "Error", v);
+    printf("\n");
     return EXIT_SUCCESS;
 }
